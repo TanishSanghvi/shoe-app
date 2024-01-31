@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shoe Preference Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .form-container {
+            margin: auto;
+            width: 50%;
+            padding: 10px;
+        }
+        input[type="text"] {
+            margin: 5px 0;
+            padding: 10px;
+            width: 95%;
+        }
+        button {
+            padding: 15px 20px;
+            background-color: blue;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: darkblue;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h2>Enter Your Shoe Preferences</h2>
+        <form id="shoeForm">
+            <input type="text" id="shoe_type" name="shoe_type" placeholder="Enter Shoe Type">
+            <input type="text" id="season" name="season" placeholder="Enter Season">
+            <input type="text" id="feel" name="feel" placeholder="Enter Feel">
+            <input type="text" id="tonality" name="tonality" placeholder="Enter Tonality">
+            <input type="text" id="promptype" name="promptype" placeholder="Enter type of prompt - discount, price or season">
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+
+    <div id="subjectLines", style = "display: none"> 
+        <h3>Generated Subject Lines</h3>
+        <ul id = "subjectLinesList"></ul>
+    </div>
+
+    <script>
+        document.getElementById("shoeForm").addEventListener("submit", function (event) {
+            event.preventDefault();
+            const data = {
+                shoe_type: document.getElementById("shoe_type").value,
+                season: document.getElementById("season").value,
+                feel: document.getElementById("feel").value,
+                tonality: document.getElementById("tonality").value,
+                promptype: document.getElementById("promptype").value
+            };
+            const backendURL = "/submitShoePreferences";
+            fetch('/submitShoePreferences', {  // Update the endpoint to your backend
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Success:', data);
+                    // Hide the form and display the generated subject lines
+                    document.getElementById("shoeForm").style.display = "none";
+                    document.getElementById("subjectLines").style.display = "block";
+
+                    // Add the generated subject lines to the list
+                    const subjectLinesList = document.getElementById("subjectLinesList");
+                    data.subject_lines.forEach(line => {
+                        const li = document.createElement("li");
+                        li.textContent = line;
+                        subjectLinesList.appendChild(li);
+                    });
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+        });
+    </script>
+</body>
+</html>
